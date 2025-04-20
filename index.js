@@ -14,13 +14,14 @@ DB.on("error", (error) => console.log(error));
 DB.once("connected", () => console.log("Connected to MongoDB"));
 
 const User = require("./model");
+const { generateToken } = require("./jwt");
 
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   const user = new User({ name, email, password });
   try {
     await user.save();
-    res.status(201).json({ message: "User created successfully" });
+    generateToken(user._id, res);
   } catch (error) {
     res.status(400).json({ message: "Error creating user" });
   }
